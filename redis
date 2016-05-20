@@ -1,0 +1,27 @@
+1.清除[key*],模糊匹配
+/usr/local/redis/bin/redis-cli keys "mem*" | xargs /usr/local/redis/bin/redis-cli del   
+
+/usr/local/redis/src/redis-cli -h 127.0.0.1 -p 6379 -a password keys * 
+/usr/local/redis/bin/redis-cli -h 127.0.0.1 -p 6381 get somekey
+
+/usr/local/redis/bin/redis-cli keys "user_star_*" | xargs /usr/local/redis/bin/redis-cli get
+
+2.读取文件批量操作命令
+cat redis_command_list.txt | /usr/local/redis/bin/redis-cli --pipe
+
+3.supervisor监控redis
+
+3.1 进入目录 /etc/supervisor/conf.d，新增redis.conf文件，并复制粘贴下面内容
+[program:redis]
+command=/usr/local/redis/bin/redis-server /usr/local/redis/etc/redis-6379.conf
+autostart=true
+autorestart=true
+startsecs=3
+
+3.2 重启supervisor服务 service supervisor restart
+3.3 查看监控情况 supervisorctl，如下显示则表示成功，可以kill掉pid进程，看是否有重启redis
+redis          RUNNING    pid 24595, uptime 0:17:42
+
+#如果报错如下
+gave up: redis entered FATAL state, too many start retries too quickly
+修改redis.conf的daemonize为no，重新启动supervisor服务
